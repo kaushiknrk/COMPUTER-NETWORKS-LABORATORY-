@@ -21,9 +21,6 @@ void print(char *label, int arr[], int n) {
    printf("%s ", label);
    for(i = 0; i < n; i++) {
       printf("%d", arr[i]);
-      if((i + 1) % 8 == 0) {
-         printf(" ");
-      }
    }
    printf("\n");
 }
@@ -67,7 +64,7 @@ int bit_destuffing(int input_framed[], int total_len, int output_bits[]) {
             printf("\n[FAILURE]: Malformed frame bit sequence pattern at sequence validation point!\n");
             return -1;
          }
-         i++;
+         i++; // Skip the stuffed 0
          ones = 0;
       }
    }
@@ -76,14 +73,12 @@ int bit_destuffing(int input_framed[], int total_len, int output_bits[]) {
 
 void decode_binary_to_string(int input_bits[], int input_len, char target_str[]) {
    int i, b, out_idx = 0;
-   for(i = 0; i < input_len; i += 8) {
+   // Safety constraint: ensure we only decode full completed bytes
+   int structural_len = (input_len / 8) * 8;
+   for(i = 0; i < structural_len; i += 8) {
       char ch = 0;
-      int limit = (input_len - i < 8) ? (input_len - i) : 8;
-      for(b = 0; b < limit; b++) {
+      for(b = 0; b < 8; b++) {
          ch = (ch << 1) | input_bits[i + b];
-      }
-      if(limit < 8) {
-         ch = ch << (8 - limit);
       }
       target_str[out_idx++] = ch;
    }
@@ -97,9 +92,9 @@ int main() {
       printf("\n----------------------------------\n");
       printf("    DATA LINK LAYER EMULATOR     \n");
       printf("----------------------------------\n");
-      printf(" [A] Run Transmitter Module \n");
-      printf(" [B] Run Receiver Module\n");
-      printf(" [C] Terminate Program\n");
+      printf(" [1] Run Transmitter Module \n");
+      printf(" [2] Run Receiver Module\n");
+      printf(" [3] Terminate Program\n");
       printf("Select operation mode (1-3): ");
       if (scanf("%d", &choice) != 1) break;
       getchar();
